@@ -24,31 +24,27 @@ end
 
 num_s = length(songnames);
 
-
+confiabilidade = [0 0 0];
 for s_ind = 1:num_s,
     % load song
     filename = fullfile(songdir,songnames{s_ind});
     
     song = audioread(filename);
     song = song(:);
+    hash = get_fingerprints(song);
+    
     
     slen = length(song);
-    
     num_win = floor((slen-olen)/(wlen-olen));
+    
     noise = add_noise(song);
     
-    for s_ind2 = 1:num_s,
-        path = sprintf('./songdir/audio%d.wav', s_ind2-1);
-        s = audioread(path);
-        s = s(:);
-        hash = get_fingerprints(s);
-        
-        %path2 = sprintf('./hashdir/hashtable audio%d_wav.mat', s_ind2-1);
-        %hash = load(path2);
-        
-        score_ruido = trymatch(noise, hash, num_win);
-    end
-   
-   % score_original = trymatch(song, hash, num_win)
+    score = trymatch(song, hash, num_win);
+    score_ruido = trymatch(noise, hash, num_win);
+    
+    confiabilidade[s_ind] = (score_ruido/score)*100;
+    
+    % aplicando o filtro
+    
     
 end
