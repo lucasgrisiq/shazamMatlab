@@ -46,17 +46,40 @@ for s_ind = 1:num_s,
     slen = length(song);
     num_win = floor((slen-olen)/(wlen-olen));
     
+    % adicionando ruido
     noise = add_noise(song);
     ns = noise(:)
-    sound(noise, 44100)
+    
+    % adicionando eco
+    [x,Fs] = audioread(filename);  
+    delay = 0.5; % 0.5s delay  
+    alpha = 0.65; % echo strength  
+    D = delay*Fs;  
+    y = zeros(size(x));  
+    y(1:D) = x(1:D);  
+   
+    for i=D+1:length(x)  
+        y(i) = x(i) + alpha*x(i-D);  
+    end  
+    
+    % por filtros
+    % b = [1,zeros(1,D),alpha];  
+    % y = filter(b,1,x);  
+     
+    sound(y,Fs);
+    
+    
+    
+%     sound(noise, 44100)
+    
+    % verificando audio com fingerprint original
     score = trymatch(song, hash.localhash, num_win);
     score_ruido = trymatch(ns, hash.localhash, num_win);
     
     fprintf('confiabilidade %d = %f', s_ind-1, (score_ruido/score)*100);
     
     % aplicando o filtro
-    
     noise_filter = lowpass(noise, 20000, param.fs)    % passa baixa ate 20kHz
-    sound(noise_filter, 44100);
+%     sound(noise_filter, 44100);
 
 end
