@@ -33,7 +33,7 @@ for s_ind = 1:num_s,
     % load song
     filename = fullfile(songdir,songnames{s_ind});
     sname_i = strrep(songnames{s_ind},'.','_');
-    hashname = fullfile(hashdir,sprintf('hashtable %s.mat',sname_i));
+    hashname = fullfile(hashdir,sprintf('hashtable_%s.mat',sname_i));
     
     if exist(hashname,'file')~=2 % skip files that have been processed
         s = audioread(filename);
